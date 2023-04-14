@@ -4,7 +4,8 @@ Shader "rypor/MyLit"{
 	Properties{
 		[Header(Surface options)]
 		// _variableName( "Label in inspector", var type) = default value
-	// Attribute helps with coding
+		// [MainTexture] and [MainColor] Allow these to be referenced through Material.mainTexture and Material.color
+		[MainTexture] _ColorMap("Color", 2D) = "white" {}
 		[MainColor] _ColorTint("Tint", Color) = (1,1,1,1)
 	}
 
