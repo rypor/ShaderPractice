@@ -10,6 +10,8 @@ struct Interpolators {
 	float4 positionCS : SV_POSITION;	// Semantic signals that this contains clip space vertex position
 };
 
+float4 _ColorTint; // Auto Synchronized with variable of same name in shader
+
 // Vertex function runs once per vertex
 Interpolators Vertex(Attributes input) {
 	Interpolators output;
@@ -27,5 +29,5 @@ Interpolators Vertex(Attributes input) {
 float4 Fragment(Interpolators input) : SV_TARGET{	// SV_TARGET lets pipeline know we are returning final pixel color
 													// Semantic applied to function auto applies to return type
 	
-	return float4(1, 1, 1, 1);
+	return _ColorTint;
 }

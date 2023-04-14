@@ -1,5 +1,12 @@
 //Written in Shader Lab
 Shader "rypor/MyLit"{
+	// Properties are set per material in inspector
+	Properties{
+		[Header(Surface options)]
+		// _variableName( "Label in inspector", var type) = default value
+	// Attribute helps with coding
+		[MainColor] _ColorTint("Tint", Color) = (1,1,1,1)
+	}
 
 	//Subshaders : Different code for different pipelines
 	SubShader{
