@@ -1,0 +1,6 @@
+https://youtu.be/gY1Mx4kkZPU
+
+Essentially the same tutorial, this time using HLSL instead of CG
+
+Following https://stackoverflow.com/questions/75852398/unity-urp-shaders-invisible
+ - Shader render queue needs to be set to the highest number for shaders to work. No clue why at the moment.
