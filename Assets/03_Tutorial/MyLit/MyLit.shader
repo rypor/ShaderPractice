@@ -21,7 +21,7 @@ Shader "rypor/MyLit"{
 			Tags{"LightMode" = "UniversalForward"} // "UniversalForward is the main lighting pass"
 
 
-			//Rendering Pipeline:
+			//Rendering Pipeline: - runs per pass
 			//	Input Assembler
 			//  Vertex Func
 			//	Rasterizer
@@ -42,6 +42,20 @@ Shader "rypor/MyLit"{
 			#pragma fragment Fragment
 
 			#include "MyLitForwardLitPass.hlsl"
+			ENDHLSL
+		}
+
+		// This pass is actually run before the forward lit pass. Unity handles calling passes in order
+		// This pass draws our object to the shadowmap texture, so we can cast shadows.
+		Pass{
+			Name "ShadowCaster"
+			Tags { "LightMode" = "ShadowCaster"}
+
+			HLSLPROGRAM
+			#pragma vertex Vertex
+			#pragma fragment Fragment
+
+			#include "MyLitShadowCasterPass.hlsl"
 			ENDHLSL
 		}
 	}
