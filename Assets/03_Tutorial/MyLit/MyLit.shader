@@ -5,7 +5,7 @@ Shader "rypor/MyLit"{
 		[Header(Surface options)]
 		// _variableName( "Label in inspector", var type) = default value
 		// [MainTexture] and [MainColor] Allow these to be referenced through Material.mainTexture and Material.color
-		[MainTexture] _ColorMap("Color", 2D) = "white" {}
+		[MainTexture] _MainTex("Color", 2D) = "white" {}
 		[MainColor] _ColorTint("Tint", Color) = (1,1,1,1)
 		_Smoothness("Smoothness", Float) = 0
 	}
@@ -31,6 +31,8 @@ Shader "rypor/MyLit"{
 			HLSLPROGRAM
 
 			#define _SPECULAR_COLOR
+			#pragma multi_compile _ _MAIN_LIGHT_SHADOWS	// Compiles a version of this pass with each arg enabled separately
+														// These are called variants. _ = no keyword
 
 			#pragma vertex Vertex
 			#pragma fragment Fragment

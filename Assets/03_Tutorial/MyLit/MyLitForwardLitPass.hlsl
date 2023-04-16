@@ -22,9 +22,9 @@ struct Interpolators {
 float4 _ColorTint; // Auto Synchronized with variable of same name in shader
 
 //Textures
-TEXTURE2D(_ColorMap); SAMPLER(sampler_ColorMap);
-//TEXTURE2D is a macro running on _ColorMap. Makes Shaders platform independent
-float4 _ColorMap_ST; // Auto set by unity to Tiling and Offset values. Used in TRANSFORM_TEX to apply uv tiling
+TEXTURE2D(_MainTex); SAMPLER(sampler_MainTex);
+//TEXTURE2D is a macro running on _MainTex. Makes Shaders platform independent
+float4 _MainTex_ST; // Auto set by unity to Tiling and Offset values. Used in TRANSFORM_TEX to apply uv tiling
 
 float _Smoothness;
 
@@ -38,7 +38,7 @@ Interpolators Vertex(Attributes input) {
 
 	// pass position/orientation data to frag func
 	output.positionCS = posnInputs.positionCS;
-	output.uv = TRANSFORM_TEX(input.uv, _ColorMap); // TRANSFORM_TEX applies uv scaling and offset
+	output.uv = TRANSFORM_TEX(input.uv, _MainTex); // TRANSFORM_TEX applies uv scaling and offset
 	output.normalWS = normInputs.normalWS;
 	// Vertices on corners are duplicated for each normal vector, therefore only one normal vector per vertice
 	output.positionWS = posnInputs.positionWS;
@@ -57,12 +57,18 @@ float4 Fragment(Interpolators input) : SV_TARGET{	// SV_TARGET lets pipeline kno
 	float2 uv = input.uv;
 
 	// Sample Texture at specific point
-	float4 colorSample = SAMPLE_TEXTURE2D(_ColorMap, sampler_ColorMap, uv);
+	float4 colorSample = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, uv);
 
 
 	InputData lightingInput = (InputData)0;	// 0 after struct sets all values in struct to 0
 	lightingInput.positionWS = input.positionWS;
 	lightingInput.viewDirectionWS = GetWorldSpaceNormalizeViewDir(input.positionWS);
+
+	// Shadowmapping - distance of every closest fragment to lightsource is stored in a texture red map. By comparing our frag
+	//			distance to the shadow map distance, we know if this frag is closest and therefore should be lit. Done by unity automatically.
+	//		Enabled using Pragma in shader file
+	lightingInput.shadowCoord = TransformWorldToShadowCoord(input.positionWS);
+
 	lightingInput.normalWS = normalize(input.normalWS); // Rasterizer interpolates vectors component wise.
 														// Can lead to non-normal vector lengths, fix here
 
