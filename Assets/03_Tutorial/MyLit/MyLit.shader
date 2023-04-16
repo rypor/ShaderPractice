@@ -33,6 +33,10 @@ Shader "rypor/MyLit"{
 			#define _SPECULAR_COLOR
 			#pragma multi_compile _ _MAIN_LIGHT_SHADOWS	// Compiles a version of this pass with each arg enabled separately
 														// These are called variants. _ = no keyword
+			#pragma multi_compile _ _MAIN_LIGHT_SHADOWS_CASCADE	// This implies _MAIN_LIGHT_SHADOWS. In the future, add _MAIN_LIGHT_SHADOWS_CASCADE
+																// to the above multi_compile instead
+			#pragma multi_compile_fragment _ _SHADOWS_SOFT	//_SHADOW_SOFT only works on fragment shader. multi_compile_fragment shares vertex
+															// func between variants
 
 			#pragma vertex Vertex
 			#pragma fragment Fragment
