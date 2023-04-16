@@ -4,6 +4,7 @@
 // Populated by Input Assembler automatically, using Semantic (ie: POSITION)
 struct Attributes {
 	float3 positionOS : POSITION; // Position, OS = Object Space
+	float3 normalOS : NORMAL;
 	float2 uv : TEXCOORD0; // Material Texture UVs
 };
 
@@ -12,6 +13,7 @@ struct Interpolators {
 
 	// Retains value from vetex stage, except rasterizer interpolates them between verticies.
 	float2 uv : TEXCOORD0;
+	float3 normalWS : TEXCOORD1; // Any Field tagged TEXCOORD- will be interpolated by Rasterizer
 };
 
 
@@ -30,10 +32,12 @@ Interpolators Vertex(Attributes input) {
 	Interpolators output;
 	// From URP/ShaderLib/ShaderVariablesFunctions.hlsl
 	VertexPositionInputs posnInputs = GetVertexPositionInputs(input.positionOS);
+	VertexNormalInputs normInputs = GetVertexNormalInputs(input.normalOS);
 
 	// pass position/orientation data to frag func
 	output.positionCS = posnInputs.positionCS;
 	output.uv = TRANSFORM_TEX(input.uv, _ColorMap); // TRANSFORM_TEX applies uv scaling and offset
+	output.normalWS = normInputs.normalWS;
 
 	return output;
 }
@@ -51,5 +55,17 @@ float4 Fragment(Interpolators input) : SV_TARGET{	// SV_TARGET lets pipeline kno
 	// Sample Texture at specific point
 	float4 colorSample = SAMPLE_TEXTURE2D(_ColorMap, sampler_ColorMap, uv);
 
-	return colorSample * _ColorTint; // component wise
+
+	InputData lightingInput = (InputData)0;	// 0 after struct sets all values in struct to 0
+	lightingInput.normalWS = normalize(input.normalWS); // Rasterizer interpolates vectors component wise.
+														// Can lead to non-normal vector lengths, fix here
+
+	SurfaceData surfaceInput = (SurfaceData)0;
+	surfaceInput.albedo = colorSample.rgb * _ColorTint.rgb;
+	surfaceInput.alpha = colorSample.a * _ColorTint.a;
+	// Vertices on corners are duplicated for each normal vector, therefore only one normal vector per vertice
+
+	// Built-in lighting calculation method
+	return UniversalFragmentBlinnPhong(lightingInput, surfaceInput);
+	//return colorSample * _ColorTint; // component wise
 }
