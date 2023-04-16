@@ -7,6 +7,7 @@ Shader "rypor/MyLit"{
 		// [MainTexture] and [MainColor] Allow these to be referenced through Material.mainTexture and Material.color
 		[MainTexture] _ColorMap("Color", 2D) = "white" {}
 		[MainColor] _ColorTint("Tint", Color) = (1,1,1,1)
+		_Smoothness("Smoothness", Float) = 0
 	}
 
 	//Subshaders : Different code for different pipelines
@@ -28,6 +29,9 @@ Shader "rypor/MyLit"{
 			//  Presentation
 
 			HLSLPROGRAM
+
+			#define _SPECULAR_COLOR
+
 			#pragma vertex Vertex
 			#pragma fragment Fragment
 

@@ -14,6 +14,7 @@ struct Interpolators {
 	// Retains value from vetex stage, except rasterizer interpolates them between verticies.
 	float2 uv : TEXCOORD0;
 	float3 normalWS : TEXCOORD1; // Any Field tagged TEXCOORD- will be interpolated by Rasterizer
+	float3 positionWS : TEXCOORD2;
 };
 
 
@@ -25,6 +26,7 @@ TEXTURE2D(_ColorMap); SAMPLER(sampler_ColorMap);
 //TEXTURE2D is a macro running on _ColorMap. Makes Shaders platform independent
 float4 _ColorMap_ST; // Auto set by unity to Tiling and Offset values. Used in TRANSFORM_TEX to apply uv tiling
 
+float _Smoothness;
 
 
 // Vertex function runs once per vertex. Do more in this and less in fragment, to save resources
@@ -38,6 +40,8 @@ Interpolators Vertex(Attributes input) {
 	output.positionCS = posnInputs.positionCS;
 	output.uv = TRANSFORM_TEX(input.uv, _ColorMap); // TRANSFORM_TEX applies uv scaling and offset
 	output.normalWS = normInputs.normalWS;
+	// Vertices on corners are duplicated for each normal vector, therefore only one normal vector per vertice
+	output.positionWS = posnInputs.positionWS;
 
 	return output;
 }
@@ -57,13 +61,16 @@ float4 Fragment(Interpolators input) : SV_TARGET{	// SV_TARGET lets pipeline kno
 
 
 	InputData lightingInput = (InputData)0;	// 0 after struct sets all values in struct to 0
+	lightingInput.positionWS = input.positionWS;
+	lightingInput.viewDirectionWS = GetWorldSpaceNormalizeViewDir(input.positionWS);
 	lightingInput.normalWS = normalize(input.normalWS); // Rasterizer interpolates vectors component wise.
 														// Can lead to non-normal vector lengths, fix here
 
 	SurfaceData surfaceInput = (SurfaceData)0;
 	surfaceInput.albedo = colorSample.rgb * _ColorTint.rgb;
 	surfaceInput.alpha = colorSample.a * _ColorTint.a;
-	// Vertices on corners are duplicated for each normal vector, therefore only one normal vector per vertice
+	surfaceInput.specular = 1;	// See Shader file for define variable enabling specular
+	surfaceInput.smoothness = _Smoothness;
 
 	// Built-in lighting calculation method
 	return UniversalFragmentBlinnPhong(lightingInput, surfaceInput);
