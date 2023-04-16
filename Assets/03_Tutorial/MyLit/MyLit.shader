@@ -51,6 +51,8 @@ Shader "rypor/MyLit"{
 			Name "ShadowCaster"
 			Tags { "LightMode" = "ShadowCaster"}
 
+			ColorMask 0	// Metadata. Turns off color, since this pass only needs the depth buffer. Small optimization
+
 			HLSLPROGRAM
 			#pragma vertex Vertex
 			#pragma fragment Fragment
