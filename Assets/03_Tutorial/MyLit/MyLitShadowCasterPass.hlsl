@@ -1,3 +1,4 @@
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 
 struct Attributes {
 	float3 positionOS : POSITION;
