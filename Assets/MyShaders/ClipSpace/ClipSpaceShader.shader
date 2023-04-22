@@ -4,10 +4,12 @@ Shader "Unlit/ClipSpaceShader"
 {
     Properties
     {
+        _Z("Z", float) = 0
     }
-    SubShader
+        SubShader
     {
-        Tags { "RenderType"="Opaque" }
+        Cull Off
+        Tags { "RenderType" = "Opaque" }
         LOD 100
 
         Pass
@@ -20,6 +22,8 @@ Shader "Unlit/ClipSpaceShader"
 
             #include "UnityCG.cginc"
 
+            float _Z;
+
             struct MeshData
             {
                 float4 vertexOS : POSITION;
@@ -29,24 +33,22 @@ Shader "Unlit/ClipSpaceShader"
             struct Interpolators
             {
                 float4 vertexCS : SV_POSITION;
-                float4 vertexWS : TEXCOORD0;
                 float2 uv : TEXCOORD1;
             };
 
             Interpolators vert (MeshData v)
             {
                 Interpolators o;
-                o.vertexWS = mul(unity_ObjectToWorld, v.vertexOS);
-                o.vertexCS = UnityObjectToClipPos(v.vertexOS);  // local space to clip space
-                o.vertexCS.x = frac(o.vertexCS.x);
+                float4 uv = float4(0, 0, UNITY_NEAR_CLIP_VALUE, 1);
+                uv.xy = float2(1, _ProjectionParams.x) * (v.uv0.xy * 2 - 1);
+                o.vertexCS = uv;
                 o.uv = v.uv0;
                 return o;
             }
 
             float4 frag(Interpolators i) : SV_Target
             {
-                float4 col = float4(0,0, 0, 1);
-                col.x = saturate(i.vertexCS.x);
+                float4 col = float4(i.uv,0,1);
                 return col;
             }
             ENDCG
