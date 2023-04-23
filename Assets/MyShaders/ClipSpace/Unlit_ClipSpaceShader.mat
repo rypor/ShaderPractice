@@ -26,9 +26,9 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Hardness: 0.5
-    - _Radius: 1.1
-    - _Strength: 1
+    - _Hardness: 0.31
+    - _Radius: 1
+    - _Strength: 100
     - _Z: 1
     m_Colors:
     - _PaintColor: {r: 1, g: 0, b: 0, a: 0}

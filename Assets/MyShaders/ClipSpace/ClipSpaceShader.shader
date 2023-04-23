@@ -52,7 +52,7 @@ Shader "Unlit/ClipSpaceShader"
                 uv.xy = float2(1, _ProjectionParams.x) * (v.uv0.xy * 2 - 1);
                 o.vertexCS = uv;
                 o.uv = v.uv0;
-                o.vertexCS = UnityObjectToClipPos(v.vertexOS);  // local space to clip space
+                //o.vertexCS = UnityObjectToClipPos(v.vertexOS);  // local space to clip space
                 
                 o.positionWS = mul(unity_ObjectToWorld, v.vertexOS);
 
@@ -62,8 +62,9 @@ Shader "Unlit/ClipSpaceShader"
             float mask(float3 paintPosWS, float3 pixelPosWS, float radius, float hardness, float strength)
             {
                 float dist = distance(paintPosWS, pixelPosWS);
-                float val = 1 - saturate(dist / radius);   // 0 to 1 if in radius, 0 outside radius
-                return val;
+                //float val = saturate(dist / radius);   // 0 to 1 if in radius, 0 outside radius
+                // val *= strength;        // apply strength? not sure if necessary
+                return 1 - smoothstep(radius * hardness, radius, dist);
             }
 
             float4 frag(Interpolators i) : SV_Target
