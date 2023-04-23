@@ -4,7 +4,11 @@ Shader "Unlit/ClipSpaceShader"
 {
     Properties
     {
-        _Z("Z", float) = 0
+        _PaintColor("Paint Color", color) = (1,0,0,0)
+        _PaintPos("Paint Position", Vector) = (0,0,0,0)
+        _Radius("Radius", float) = 1
+        _Hardness("Hardness", float) = 0.5
+        _Strength("Strength", float) = 1
     }
         SubShader
     {
@@ -22,7 +26,11 @@ Shader "Unlit/ClipSpaceShader"
 
             #include "UnityCG.cginc"
 
-            float _Z;
+            float4 _PaintColor;
+            float3 _PaintPos;
+            float _Radius;
+            float _Hardness;
+            float _Strength;
 
             struct MeshData
             {
@@ -33,7 +41,8 @@ Shader "Unlit/ClipSpaceShader"
             struct Interpolators
             {
                 float4 vertexCS : SV_POSITION;
-                float2 uv : TEXCOORD1;
+                float2 uv : TEXCOORD0;
+                float4 positionWS : TEXCOORD1;
             };
 
             Interpolators vert (MeshData v)
@@ -43,12 +52,26 @@ Shader "Unlit/ClipSpaceShader"
                 uv.xy = float2(1, _ProjectionParams.x) * (v.uv0.xy * 2 - 1);
                 o.vertexCS = uv;
                 o.uv = v.uv0;
+                o.vertexCS = UnityObjectToClipPos(v.vertexOS);  // local space to clip space
+                
+                o.positionWS = mul(unity_ObjectToWorld, v.vertexOS);
+
                 return o;
+            }
+
+            float mask(float3 paintPosWS, float3 pixelPosWS, float radius, float hardness, float strength)
+            {
+                float dist = distance(paintPosWS, pixelPosWS);
+                float val = 1 - saturate(dist / radius);   // 0 to 1 if in radius, 0 outside radius
+                return val;
             }
 
             float4 frag(Interpolators i) : SV_Target
             {
-                float4 col = float4(i.uv,0,1);
+                //float4 col = float4(i.uv,0,1);
+                float val = mask(_PaintPos, i.positionWS.xyz, _Radius, _Hardness, _Strength);
+                float4 baseCol = float4(1, 1, 1, 1);
+                float4 col = lerp(baseCol, _PaintColor, val);
                 return col;
             }
             ENDCG
