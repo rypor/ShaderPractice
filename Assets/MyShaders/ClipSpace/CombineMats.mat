@@ -68,13 +68,14 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _GlitterIntensity: 7.8
-    - _GlitterScale: 10
+    - _GlitterIntensity: 10
+    - _GlitterScale: 5
     - _NoiseScale: 15
     - _NoiseStrength: 0.025
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _ShapeNoiseScale: 40
+    - _ShapeNoiseScale: 70
     m_Colors:
+    - _BaseTiling: {r: 2, g: 2, b: 0, a: 0}
     - _GlitterColor: {r: 1, g: 1, b: 1, a: 0}
   m_BuildTextureStacks: []

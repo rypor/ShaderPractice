@@ -36,12 +36,14 @@ public class PaintManager : MonoBehaviour
     public void InitTextures(PaintableObject paintableObject)
     {
         Paint(paintableObject, Vector3.zero, 99999, 1, new Color(0, 0, 0, 0));
-        Paint(paintableObject, Vector3.zero, 0.8f, 0.5f, Color.red);
+        Paint(paintableObject, Vector3.zero, 0.8f, 0.7f, Color.blue);
+        Paint(paintableObject, Vector3.zero, 0.3f, 0.7f, Color.red);
     }
 
     public void Paint(PaintableObject paintableObject, Vector3 pos, float rad, float hardness, Color color)
     {
         RenderTexture mask = paintableObject.getMask();
+        RenderTexture support = paintableObject.getSupport();
         Renderer rend = paintableObject.getRenderer();
 
         paintMaterial.SetFloat(radiusID, rad);
@@ -51,8 +53,10 @@ public class PaintManager : MonoBehaviour
 
         paintMaterial.SetTexture(textureID, mask);
 
-        command.SetRenderTarget(mask);
+        command.SetRenderTarget(support);
         command.DrawRenderer(rend, paintMaterial, 0);
+
+        command.Blit(support, mask);
 
         Graphics.ExecuteCommandBuffer(command);
         command.Clear();
