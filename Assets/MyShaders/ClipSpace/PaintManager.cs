@@ -36,7 +36,7 @@ public class PaintManager : MonoBehaviour
     public void InitTextures(PaintableObject paintableObject)
     {
         Paint(paintableObject, Vector3.zero, 99999, 1, new Color(0, 0, 0, 0));
-        Paint(paintableObject, Vector3.zero, 0.5f, 0.8f, Color.red);
+        Paint(paintableObject, Vector3.zero, 0.8f, 0.5f, Color.red);
     }
 
     public void Paint(PaintableObject paintableObject, Vector3 pos, float rad, float hardness, Color color)
