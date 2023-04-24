@@ -26,7 +26,7 @@ Shader "Unlit/ClipSpaceShader"
             float4 _MainTex_ST;
 
             float4 _PaintColor;
-            float3 _PaintPos;
+            float3 _PaintPosition;
             float _Radius;
             float _Hardness;
 
@@ -68,7 +68,7 @@ Shader "Unlit/ClipSpaceShader"
             float4 frag(Interpolators i) : SV_Target
             {
                 //float4 col = float4(i.uv,0,1);
-                float val = mask(_PaintPos, i.positionWS.xyz, _Radius, _Hardness);
+                float val = mask(_PaintPosition, i.positionWS.xyz, _Radius, _Hardness);
                 float4 baseCol = tex2D(_MainTex, i.uv);
                 float4 col = lerp(baseCol, _PaintColor, val);
                 return col;

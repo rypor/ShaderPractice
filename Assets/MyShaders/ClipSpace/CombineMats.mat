@@ -68,8 +68,8 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _GlitterIntensity: 10
-    - _GlitterScale: 5
+    - _GlitterIntensity: 9
+    - _GlitterScale: 7
     - _NoiseScale: 15
     - _NoiseStrength: 0.025
     - _QueueControl: 0
